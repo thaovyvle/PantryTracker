@@ -28,10 +28,10 @@ export default function Home() {
   useEffect(() => {
     const updatePantry = async () => {
       const snapshot = query(collection(firestore, 'Pantry'))
-      const docs = await getDocs(snapshot) 
+      const docs = await getDocs(snapshot)
       const pantryList = []
       docs.forEach((doc) => {
-        pantryList.push(doc.id)
+        pantryList.push({ id: doc.id, imgSrc: doc.data().imgSrc, quantity: doc.data().quantity })
       })
       console.log(pantryList)
       setPantry(pantryList)
@@ -46,38 +46,27 @@ export default function Home() {
   return (
     <Box width="100vw" height="100vh"
       display={'flex'}
-      justifyContent={'center'}
       alignItems={'center'}
       flexDirection={'column'}
     >
-      <Box border={'2px solid white'} padding={"20px"} borderRadius={'25px'} marginBottom={"20px"}>
-      <Box width="600px" height="80px" borderBottom={"3px solid #5185f5"} marginBottom={"20px"}>
+      <Box marginTop={"50px"} borderRadius={'25px'} marginBottom={"20px"}>
+      <Box width="100vw" height="80px" borderBottom={"3px solid #5185f5"} marginBottom={"20px"}>
         <Typography variant={'h3'} color={'#ffffff'} textAlign={'center'} fontWeight={'bold'}>
-          P A N T R Y  T R A C K E R
+          Pantry Tracker
         </Typography>
       </Box>
-      <Stack width="600px" height="350px" overflow={'auto'}>
-        {pantry.map((i) => (
-          <Box 
-          key={i}
-          width="100%"
-          minHeight="110px"
-          display={'flex'}
-          justifyContent={'center'}
-          alignItems={'center'}
-          bgcolor={'white'}
-          borderRadius={'20px'}
-          marginBottom={'10px'}
-          paddingY={'10px'}
-          >
-            <Typography variant={'h5'} color={'#5185f5'} textAlign={'center'} fontWeight={'bold'}>
-              {i}
-            </Typography>
-          </Box>
-        ))}
-      </Stack>
-      </Box>
-      <Button variant="contained" onClick={handleOpen} >Add New Item</Button>
+      <Box width="100vw" alignItems={'center'} justifyContent={'center'}>
+      <Button variant="contained" onClick={handleOpen} 
+      sx={{ 
+        backgroundColor: '#5185f5', 
+        color: 'white', 
+        borderRadius: "30px",
+        width: '150px', 
+        height: '50px',
+        '&:hover': {
+          backgroundColor: '#4169c4',
+        },
+      }}>Add New Item</Button>
       <Modal
       open={open}
       onClose={handleClose}
@@ -94,10 +83,45 @@ export default function Home() {
           onClick={() => { 
             addItem(itemName) 
             handleClose()
+            }}
+            sx={{ 
+              backgroundColor: '#5185f5', 
+              color: 'white', 
+              width: '100px', 
+              height: '50px',
+              '&:hover': {
+                backgroundColor: '#4169c4',
+              },
             }} >Add</Button>
         </Stack>
       </Box>
       </Modal>
+      </Box>
+      <Stack width="100vw" height="100vh" overflow={'auto'} direction={'row'} gap={'10px'} padding={'50px'} flexWrap={'wrap'} >
+        {pantry.map((item) => (
+          <Box 
+          key={item}
+          width="calc(20% - 10px)"
+          height="350px"
+          display={'flex'}
+          alignItems={'center'}
+          justifyContent={'center'}
+          bgcolor={'white'}
+          borderRadius={'30px'}
+          marginBottom={'10px'}
+          flexDirection={"column"}
+          >
+            <img src={item.imgSrc} alt={item.id} style={{ width: '70%', height: 'auto', borderRadius: '20px' }} />
+            <Typography variant={'h4'} color={'#5185f5'} textAlign={'center'} fontWeight={'bold'}>
+              {item.id}
+            </Typography>
+            <Typography variant={'h8'} color={'rgb(8, 7, 43)'} textAlign={'center'} marginTop={'5px'} marginBottom={'10px'}>
+                Quantity: {item.quantity}
+            </Typography>
+          </Box>
+        ))}
+      </Stack>
+      </Box>
     </Box>
   );
 }
